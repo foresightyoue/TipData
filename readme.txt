@@ -37,3 +37,4 @@ http://ramj2ee.blogspot.jp/
 
 
 https://maven.codenvycorp.com/content/groups/public
+Downloading: https://maven.codenvycorp.com/content/repositories/codenvy-public-snapshots/org/eclipse/che/plugin/plugin-terminal-ui/5.3.0-SNAPSHOT/plugin-terminal-ui-5.3.0-SNAPSHOT.jar
