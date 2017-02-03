@@ -35,3 +35,5 @@ j2ee
 http://ramj2ee.blogspot.jp/
 
 
+
+https://maven.codenvycorp.com/content/groups/public
