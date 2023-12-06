@@ -1,0 +1,1261 @@
+{
+	"info": {
+		"_postman_id": "4b8d5aec-039f-425a-9246-34917bbd469a",
+		"name": "加密货币（cryptocurrency）",
+		"description": "签名，回调等参考以下文档：\n\nEpayApi-V2.0.0 中文文档\nhttps://openapi.epay.com/viewset/b22b0395/ceee/437b/9fcf/05147d369fdb/view/11244241/TzkyLzf1#intro\n\n-----\nRefer to the following documents for signatures, callbacks, etc. :\n\nEpayApi-V2.0.0 English document\nhttps://openapi.epay.com/viewset/b22b0395/ceee/437b/9fcf/05147d369fdb/view/11244241/U16qGMZi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17957821"
+	},
+	"item": [
+		{
+			"name": "代收接口（USDT）",
+			"item": [
+				{
+					"name": "创建交易",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let requestParams = JSON.parse(request.data);\r",
+									"let param=requestParams.param;\r",
+									"let key = \"2d00b386231806ec7e18e2d96dc043aa\"; \r",
+									"\r",
+									"\r",
+									"function sortObj(obj) {\r",
+									"\tvar sortArry = new Array;\r",
+									"\tvar keysArr = Object.keys(obj).sort();\r",
+									"\tvar sortObj = {};\r",
+									"\tfor (var i in keysArr) {\r",
+									"\t\tsortObj[keysArr[i]] = (obj[keysArr[i]]);\r",
+									"\t}\r",
+									"\treturn sortObj;\r",
+									"}\r",
+									"\r",
+									"\r",
+									"function sortObj(obj) {\r",
+									"    var sortArry = new Array;\r",
+									"    var keysArr = Object.keys(obj).sort();\r",
+									"    var sortObjs = {};\r",
+									"    for (var i in keysArr) {\r",
+									"        if (obj[keysArr[i]] != \"\") {\r",
+									"            if (keysArr[i] == 'senderInfo' \r",
+									"            || keysArr[i] == 'receiverInfo'\r",
+									"            || keysArr[i] == 'fields'\r",
+									"            || keysArr[i] == 'receiverBusiness'\r",
+									"            || keysArr[i] == 'senderBusiness') {\r",
+									"                sortObjs[keysArr[i]] = sortObj(obj[keysArr[i]]);\r",
+									"            } else {\r",
+									"                sortObjs[keysArr[i]] = (obj[keysArr[i]]);\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"    return sortObjs;\r",
+									"}\r",
+									"\r",
+									"function concatObj(obj) {\r",
+									"    var str = \"\"\r",
+									"    for (var item in obj) {\r",
+									"        if (obj[item] != \"\") {\r",
+									"            if (item == 'senderInfo' \r",
+									"            || item == 'receiverInfo'\r",
+									"            || item == 'fields'\r",
+									"            || item == 'receiverBusiness'\r",
+									"            || item == 'senderBusiness') {\r",
+									"                str = str + item + '={' + concatObj(obj[item]) + '}&';\r",
+									"            } else {\r",
+									"                str = str + item + '=' + (obj[item]) + '&';\r",
+									"            }\r",
+									"\r",
+									"        }\r",
+									"    }\r",
+									"    return str.substr(0, str.length - 1);;\r",
+									"}\r",
+									"\r",
+									"\r",
+									"let obj = sortObj(param);\r",
+									"\r",
+									"console.log(obj);\r",
+									"let sign = concatObj(obj);\r",
+									"\r",
+									"\r",
+									"sign = sign + \"&key=\" + key;\r",
+									"console.log(sign);\r",
+									"sign = CryptoJS.SHA256(sign) + \"\";\r",
+									"console.log(sign);\r",
+									"\r",
+									"//设置签名\r",
+									"pm.environment.set(\"sign\", sign);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"senderEpayAccount\": \"11@qq.com\",\n    \"merchantName\": \"epay\",\n    \"merchantOrderNo\": \"M0621122212401\",\n    \"amount\": \"1\",\n    \"paymentCurrency\": \"USDT\",\n    \"receiveCurrency\":\"USD\",\n    \"chainName\": \"USDT-TRC20\",\n    \"notifyUrl\": \"http://localhost/paymentApi/channel/send.do\",\n    \"remark\": \"test\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://29597375fx.epaydev.xyz/capi/openapi/payinApi/sendCryptoTransaction",
+							"protocol": "http",
+							"host": [
+								"29597375fx",
+								"epaydev",
+								"xyz"
+							],
+							"path": [
+								"capi",
+								"openapi",
+								"payinApi",
+								"sendCryptoTransaction"
+							]
+						},
+						"description": "代收接口-加密货币充值（USDT）\n\n### BASIC\n\n**Path：** /payinApi/sendCryptoTransaction\n\n**Method：** POST\n\n**Desc：**\n\n代收接口-加密货币充值（USDT）\n\n### REQUEST\n\n**Headers：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | object | YES |  | 参数 |\n| \\-epayAccount | string | YES |  | 商家登录Epay账户 |\n| \\-version | string | YES |  | 接口版本号 |\n| \\-senderEpayAccount | string | YES |  | 付款人Epay账户 |\n| \\-merchantName | string | YES |  | 商家名称 |\n| \\-merchantOrderNo | string | YES |  | 商家订单号，商家系统唯一标识 |\n| \\-amount | string | YES |  | 订单金额，支付金额 |\n| \\-paymentCurrency | string | YES |  | 支付币种 |\n| \\-receiveCurrency | string | YES |  | 收款币种 |\n| \\-chainName | string | YES |  | 加密货币链 USDT-ERC20/USDT-TRC20 |\n| \\-notifyUrl | string | YES |  | 接收响应地址 |\n| \\-remark | string | NO |  | 订单备注 |\n| \\-language | string | NO |  | 接口语言 |\n| sign | string | NO |  | 签名 |\n\n### RESPONSE\n\n**Header：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body：**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | NO |  | 签名 |\n| epayAccount | string | NO |  | 商家EPAY账号 |\n| version | string | NO |  | 版本号 |\n| code | integer | NO |  | 状态码 1：订单创建请求成功，订单实际状态根据status进行判定 |\n| message | string | NO |  | 提示 |\n| data | object | NO |  | 数据 |\n| \\-merchantName | string | NO |  | 商户名称 |\n| \\-senderEpayAccount | string | NO |  | 付款商户Epay账号 |\n| \\-notifyUrl | string | NO |  | 订单回调地址 |\n| \\-merchantOrderNo | string | NO |  | 商家订单号 |\n| \\-epayOrderNo | string | NO |  | Epay订单号 |\n| \\-status | string | NO |  | 订单状态 |\n| \\-amount | string | NO |  | 订单金额 |\n| \\-fee | string | NO |  | 订单费用 |\n| \\-currency | string | NO |  | 交易币种 |\n| \\-timestampgmt | string | NO |  | 时间戳 |"
+					},
+					"response": [
+						{
+							"name": "代收接口-加密货币充值（USDT）",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"senderEpayAccount\": \"11@qq.com\",\n    \"merchantName\": \"epay\",\n    \"merchantOrderNo\": \"M0621122212401\",\n    \"amount\": \"1\",\n    \"paymentCurrency\": \"USDT\",\n    \"receiveCurrency\":\"USD\",\n    \"chainName\": \"USDT-TRC20\",\n    \"notifyUrl\": \"http://localhost/paymentApi/channel/send.do\",\n    \"remark\": \"test\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payinApi/sendCryptoTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payinApi",
+										"sendCryptoTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 13 Sep 2021 11:18:27 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"4B52D148284D4A7210CE72A329C60906AE7C20618CB9B13C67C6CBFE7E16BD61\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"merchantName\": \"epay\",\n        \"senderEpayAccount\": \"11@qq.com\",\n        \"notifyUrl\": \"\",\n        \"merchantOrderNo\": \"M0621122212401\",\n        \"epayOrderNo\": \"201141437375104065114112\",\n        \"status\": \"1\",\n        \"fields\": \"{\\\"address\\\":\\\"TKnr8ZCZCH8aJCWCeb7yE57nuwqXWq17BC\\\",\\\"chainName\\\":\\\"USDT-TRC20\\\",\\\"currency\\\":\\\"USDT\\\",\\\"singleMax\\\":\\\"9999999\\\",\\\"singleMin\\\":\\\"0\\\",\\\"url\\\":\\\"data:image/jpg;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAADP0lEQVR42u3bwXHkMAxFwck/aTsIAvgg1e/qLZVE9RywpH5/UkM/SyCwBJbAksASWAJLAktgCSwJLIElsCSwBJbAksASWAJLAktgCSwJLIElsCSw9AFYv6lO7qrwngtv44qVBAsssMACCyywwALrXVhjVz75a98b7Xuine8ILLDAAgsssMACC6yHYJ28lbGFHruNwp/KkpUECyywwAILLLDAAgusxVcuHD/BAgsssMACCyywwALrk1NhaoRMbfiABRZYYIEFFlhggQVWNawU2ZN/3Pf4zmOBBRZYYIEFFlhggbUJVl992yM7/zq2kmCBBRZYYIEFFlhgfQbWklJbK0vmvvz6gwUWWGCBBRZYYIH1ramw8MpX7Ja8JBgssMACCyywwAILrAth9eHoW/ex/ZDUGbIHD/qBBRZYYIEFFlhggTU9JfWNNie30ecsdTrtyqkQLLDAAgsssMACC6xpWNvO/JcPXKkhcdsDggUWWGCBBRZYYIF1A6y+bYrCbZnCK/ddaglKsMACCyywwAILLLDehbVkh6dv7QoPjY39CB/87wawwAILLLDAAgsssKbpjL3C1JVTDxgPLLDAAgsssMACC6wLYY19EZCS1PdT6bvJB/cKwQILLLDAAgsssMCaXruxLy9OVnanhtQ5MLDAAgsssMACCyywHJuJjp87QS+XBBZYYIEFFlhggQXWc7DGvo8onPvGdqVSwylYYIEFFlhggQUWWGAdz1+pCWvJQajUJx5ggQUWWGCBBRZYYIG1aWZM/RgKx8/43AcWWGCBBRZYYIEF1v2wYk+yY92XfNMBFlhggQUWWGCBBRZYs5POFR9E9E2UqVkVLLDAAgsssMACC6yvwtp55T5JY6+/0DdYYIEFFlhggQUWWGBFp6S+ld15HsvHFGCBBRZYYIEFFlhgPQortT0ydqn4hg9YYIEFFlhggQUWWGAtmPuuGGzjx7PAAgsssMACCyywwLof1hjZvl2avskuNRSDBRZYYIEFFlhggQVWczs3fApf8DYrYIEFFlhggQUWWGA9B0sCS2AJLAksgSWwBJYElsASWBJYAktgSWAJLIElgSWwBJYElsASWBJYAktgSWAJLH2nf7dS5A0/8aBRAAAAAElFTkSuQmCC\\\"}\",\n        \"amount\": \"1\",\n        \"fee\": \"0.00\",\n        \"currency\": null,\n        \"timestampgmt\": \"2021-09-14 09:18:24\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "查询订单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"b48916e1-91fb-4ff9-9002-17e8431a5a15\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payinApi/queryTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payinApi",
+								"queryTransaction"
+							]
+						},
+						"description": "# 代收接口-查询订单\n\n### BASIC\n\n**Path：** /payinApi/queryTransaction\n\n**Method：** POST\n\n**Desc：**\n\n代收接口-查询订单\n\n### REQUEST\n\n**Headers：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | 参数 |\n| ─epayAccount | string | YES |  | 商户EPAY账号 |\n| ─version | string | YES |  | 版本号 |\n| ─merchantOrderNo | string | YES |  | 商户订单号 |\n| sign | string | YES |  | 签名 |\n\n### RESPONSE\n\n**Header：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body：**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | 签名 |\n| epayAccount | string | YES |  | 商家EPAY账号 |\n| version | string | YES |  | 版本号 |\n| code | integer | YES |  | 状态码 1：成功 |\n| message | string | YES |  | 提示 |\n| data | JSONObject | YES |  | 数据 |\n| ─category | string | YES |  | 汇款方式：银行BANK，现金CASH |\n| ─merchantOrderNo | string | YES |  | 商户订单号 |\n| ─epayOrderNo | string | YES |  | Epay订单号 |\n| ─pinCode | string | YES |  | 取款码 |\n| ─status | string | YES |  | 状态 |\n| ─amount | string | YES |  | 订单金额 |\n| ─currency | string | YES |  | 订单币种 |\n| ─receiveAmount | string | YES |  | 收款金额 |\n| ─receiveCurrency | string | YES |  | 收款币种 |\n| ─paymentAmount | string | YES |  | 付款金额 |\n| ─paymentCurrency | string | YES |  | 付款币种 |\n| ─rate | string | YES |  | 汇率 |\n| ─fee | string | YES |  | 手续费 |\n| ─extendFields | string | YES |  | 扩展字段 |\n| ─rateMode | string | YES |  | 汇率模式0 美金到目标币种，1目标币种到美金 |\n| ─senderInfo | string | YES |  | 付款人信息 |\n| ─receiveInfo | string | YES |  | 收款人信息 |"
+					},
+					"response": [
+						{
+							"name": "代收接口-查询订单",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"b48916e1-91fb-4ff9-9002-17e8431a5a15\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/queryTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"queryTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 12 Sep 2021 08:02:01 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"CA0AEA1A192DA37F04D264F24F38663B006356E336C9DEC686DC29B32DA2B705\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"EWALLET\",\n        \"merchantOrderNo\": \"b48916e1-91fb-4ff9-9002-17e8431a5a15\",\n        \"epayOrderNo\": \"201141458426277643849728\",\n        \"pinCode\": null,\n        \"status\": \"1\",\n        \"amount\": \"123.45\",\n        \"currency\": \"EUR\",\n        \"receiveAmount\": \"123.45\",\n        \"receiveCurrency\": \"EUR\",\n        \"paymentAmount\": \"134.56\",\n        \"paymentCurrency\": \"EUR\",\n        \"rate\": \"1.000000\",\n        \"fee\": \"11.11\",\n        \"extendFields\": null\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "代付接口（USDT）",
+			"item": [
+				{
+					"name": "创建订单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sign\": \"{{sign}}\",\n    \"param\": {\n        \"epayAccount\": \"test2020@epay.com\",\n        \"category\": \"CRYPTO\",\n        \"notifyUrl\": \"http://localhost/paymentApi/channel/send.do\",\n        \"merchantOrderNo\": \"07021001122\",\n        \"amount\": \"10\",\n        \"currency\": \"USDT\",\n        \"version\": \"V2.0.0\",\n        \"receiverInfo\": {\n            \"chainType\": \"USDT-TRC20\",\n            \"address\": \"Tsssswwwwwwrrrww\",\n            \"country\": \"CN\"\n        },\n        \"transactionType\": \"C2C\",\n        \"extendFields\": \"\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payoutApi/createCryptoTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payoutApi",
+								"createCryptoTransaction"
+							]
+						},
+						"description": "# 加密货币提现（USDT）\n\n### BASIC\n\n**Path：** /payoutApi/createCryptoTransaction\n\n**Method：** POST\n\n**Desc：**\n\n仅支持USDT-ERC20、USDT-TRC20钱包地址\n\n### REQUEST\n\n**Headers：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | 参数 |\n| ─epayAccount | string | YES |  | 商家EPAY账号 |\n| ─category | string | YES |  | 类型CRYPTO |\n| ─notifyUrl | string | NO |  | 回调地址 |\n| ─merchantOrderNo | string | YES |  | 商家订单号 |\n| transactionType | string | YES |  | 交易模式：C2C |\n| ─amount | string | NO |  | 金额 |\n| ─currency | string | YES |  | 币种 |\n| ─version | string | YES |  | 版本号 |\n| ─extendFields | JSONObject | NO |  | 商家扩展字段 |\n| ─receiverInfo | JSONObject | YES |  |  |\n| ─chainType | string | YES |  | 协议类型：USDT-ERC20、USDT-TRC20 |\n| ─address | string | YES |  | 收款钱包地址 |\n| ─country | string | YES |  | 收款国家 |\n| sign | string | YES |  | 签名 |\n\n### RESPONSE\n\n**Header：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body：**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | 签名 |\n| epayAccount | string | NO |  | 商家EPAY账号 |\n| version | string | NO |  | 版本号 |\n| code | integer | NO |  | 返回码 1：成功 |\n| message | string | NO |  | 提示 |\n| data | JSONObject | NO |  | 数据 |\n| ─category | string | NO |  | 加密货币CRYPTO |\n| ─merchantOrderNo | string | NO |  | 商家订单号 |\n| ─epayOrderNo | string | NO |  | Epay订单号 |\n| ─status | string | NO |  | 订单状态 |\n| ─amount | string | NO |  | 订单金额 |\n| ─currency | string | NO |  | 币种 |\n| ─receiveAmount | string | NO |  | 收款金额 |\n| ─rate | string | NO |  | 汇率 |\n| ─fee | string | NO |  | 费用 |\n| ─extendFields | string | NO |  | 商家扩展字段 |\n| ─address | string | NO |  | 收款地址 |\n| ─chainType | string | NO |  | 协议类型 |"
+					},
+					"response": [
+						{
+							"name": "加密货币提现（USDT）",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"sign\": \"{{sign}}\",\n    \"param\": {\n        \"epayAccount\": \"test2020@epay.com\",\n        \"category\": \"CRYPTO\",\n        \"notifyUrl\": \"http://localhost/paymentApi/channel/send.do\",\n        \"merchantOrderNo\": \"07021001122\",\n        \"amount\": \"10\",\n        \"currency\": \"USDT\",\n        \"version\": \"V2.0.0\",\n        \"receiverInfo\": {\n            \"chainType\": \"USDT-TRC20\",\n            \"address\": \"Tsssswwwwwwrrrww\",\n            \"country\": \"CN\"\n        },\n        \"transactionType\": \"C2C\",\n        \"extendFields\": \"\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/createEwalletTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"createEwalletTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 12 Aug 2021 10:13:36 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"1D3EDE5202A6919D5BC7A335F71C4DA914BD23233D6590E08F279B2C92CF1B97\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"CRYPTO\",\n        \"merchantOrderNo\": \"070200122\",\n        \"epayOrderNo\": \"231151425762384680779776\",\n        \"status\": \"1\",\n        \"amount\": \"0.01\",\n        \"settlementCurrency\": null,\n        \"receiveAmount\": \"0.01\",\n        \"receiveCurrency\": null,\n        \"rate\": \"1.000000\",\n        \"fee\": \"0.01\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "确认订单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"CN09163110011\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payoutApi/confirmTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payoutApi",
+								"confirmTransaction"
+							]
+						},
+						"description": "# 代付接口-确认订单\n\n### BASIC\n\n**Path：** /payoutApi/confirmTransaction\n\n**Method：** POST\n\n**Desc：**\n\n代付接口-确认订单\n\n### REQUEST\n\n**Headers：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | 参数 |\n| ─epayAccount | string | YES |  | 商户EPAY账号 |\n| ─version | string | YES |  | 版本号 |\n| ─merchantOrderNo | string | YES |  | 商户订单号 |\n| sign | string | YES |  | 签名 |\n\n### RESPONSE\n\n**Header：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body：**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | 签名 |\n| epayAccount | string | YES |  | 商家EPAY账号 |\n| version | string | YES |  | 版本号 |\n| code | integer | YES |  | 状态码 1：成功 |\n| message | string | YES |  | 提示 |\n| data | JSONObject | YES |  | 数据 |\n| ─category | string | YES |  | 汇款方式：银行BANK，现金CASH |\n| ─merchantOrderNo | string | YES |  | 商户订单号 |\n| ─epayOrderNo | string | YES |  | Epay订单号 |\n| ─status | string | YES |  | 订单状态 |\n| ─paymentAmount | string | YES |  | 付款金额 |\n| ─settlementCurrency | string | YES |  | 结算币种 |\n| ─receiveAmount | string | YES |  | 收款金额 |\n| ─receiveCurrency | string | YES |  | 收款币种 |\n| ─rate | string | YES |  | 汇率 |\n| ─payerFee | string | YES |  | 手续费 |\n| ─extendFields | string | YES |  | 额外字段 |\n| ─rateMode | string | YES |  | 汇率模式0 美金到目标币种，1目标币种到美金 |"
+					},
+					"response": [
+						{
+							"name": "代付接口-确认订单",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"20210708901\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/confirmTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"confirmTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Sep 2021 11:58:08 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"F6A203F8CD122B10B397AE8B9CB0C79930293965FB51BCF59CDB9503D3D83F40\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"BANK\",\n        \"merchantOrderNo\": \"20210708901\",\n        \"epayOrderNo\": \"211151433033399790071808\",\n        \"status\": \"1\",\n        \"amount\": \"100.0\",\n        \"settlementCurrency\": \"USD\",\n        \"receiveAmount\": \"132.91\",\n        \"receiveCurrency\": \"SGD\",\n        \"rate\": \"1.329116\",\n        \"fee\": \"4.0\",\n        \"rateMode\": \"0\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "取消订单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"20210708220\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payoutApi/cancelTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payoutApi",
+								"cancelTransaction"
+							]
+						},
+						"description": "# 代付接口-取消订单\n\n### BASIC\n\n**Path：** /payoutApi/cancelTransaction\n\n**Method：** POST\n\n**Desc：**\n\n代付接口-取消订单\n\n### REQUEST\n\n**Headers：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | 参数 |\n| ─epayAccount | string | YES |  | 商户EPAY账号 |\n| ─version | string | YES |  | 版本号 |\n| ─merchantOrderNo | string | YES |  | 商户订单号 |\n| sign | string | YES |  | 签名 |\n\n### RESPONSE\n\n**Header：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body：**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | 签名 |\n| epayAccount | string | YES |  | 商家EPAY账号 |\n| version | string | YES |  | 版本号 |\n| code | integer | YES |  | 状态码 1：成功 |\n| message | string | YES |  | 提示 |\n| data | JSONObject | YES |  | 数据 |\n| ─category | string | YES |  | 汇款方式：银行BANK，现金CASH |\n| ─merchantOrderNo | string | YES |  | 商户订单号 |\n| ─epayOrderNo | string | YES |  | Epay订单号 |\n| ─status | string | YES |  | 订单状态 |\n| ─paymentAmount | string | YES |  | 付款金额 |\n| ─settlementCurrency | string | YES |  | 结算币种 |\n| ─receiveAmount | string | YES |  | 收款金额 |\n| ─receiveCurrency | string | YES |  | 收款币种 |\n| ─rate | string | YES |  | 汇率 |\n| ─payerFee | string | YES |  | 手续费 |\n| ─extendFields | string | YES |  | 额外字段 |\n| ─rateMode | string | YES |  | 汇率模式0 美金到目标币种，1目标币种到美金 |"
+					},
+					"response": [
+						{
+							"name": "代付接口-取消订单",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"20210708220\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/cancelTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"cancelTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Sep 2021 11:57:37 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"3BDFDC7FA142852CA5A658ECD86C2E102C501A938E4393D58A8111634EDDB5AD\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"BANK\",\n        \"merchantOrderNo\": \"20210708220\",\n        \"epayOrderNo\": \"211151433035626655117312\",\n        \"status\": \"5\",\n        \"amount\": \"100.0\",\n        \"settlementCurrency\": \"USD\",\n        \"receiveAmount\": \"132.91\",\n        \"receiveCurrency\": \"SGD\",\n        \"rate\": \"1.329116\",\n        \"fee\": \"5.0\",\n        \"rateMode\": \"0\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "查询订单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"102e5b3e-12f1-4d56-a467-6775eea29f86\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payoutApi/queryTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payoutApi",
+								"queryTransaction"
+							]
+						},
+						"description": "# 代付接口-查询订单\n\n### BASIC\n\n**Path：** /payoutApi/queryTransaction\n\n**Method：** POST\n\n**Desc：**\n\n代付接口-查询订单\n\n### REQUEST\n\n**Headers：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | 参数 |\n| ─epayAccount | string | YES |  | 商户EPAY账号 |\n| ─version | string | YES |  | 版本号 |\n| ─merchantOrderNo | string | YES |  | 商户订单号 |\n| sign | string | YES |  | 签名 |\n\n### RESPONSE\n\n**Header：**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body：**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | 签名 |\n| epayAccount | string | YES |  | 商家EPAY账号 |\n| version | string | YES |  | 版本号 |\n| code | integer | YES |  | 状态码 1：成功 |\n| message | string | YES |  | 提示 |\n| data | JSONObject | YES |  | 数据 |\n| ─category | string | YES |  | 银行BANK，现金CASH，钱包EWALLET |\n| ─merchantOrderNo | string | YES |  | 商家订单号 |\n| ─epayOrderNo | string | YES |  | Epay订单号 |\n| ─pinCode | string | YES |  | 取款码 |\n| ─status | string | YES |  | 订单状态 |\n| ─amount | string | YES |  | 结算金额 |\n| ─currency | string | YES |  | 结算币种 |\n| ─receiveAmount | string | YES |  | 收款金额（代付） |\n| ─receiveCurrency | string | YES |  | 收款币种（代付） |\n| ─paymentAmount | string | YES |  | 付款金额（代收） |\n| ─paymentCurrency | string | YES |  | 付款币种（代收） |\n| ─rate | string | YES |  | 汇率 |\n| ─fee | string | YES |  | 费用 |\n| ─extendFields | string | YES |  | 商家扩展字段 |\n| ─rateMode | string | YES |  | 汇率模式 0：付款币种到收款币种，1：收款币种到付款币种 |"
+					},
+					"response": [
+						{
+							"name": "代付接口-查询订单",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"20210708220\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/queryTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"queryTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 12 Sep 2021 08:02:01 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"2B99AF25516083A4869F038458B3D728849A48060FBC3A5DB2D9D767FECD119E\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"BANK\",\n        \"merchantOrderNo\": \"20210708220\",\n        \"epayOrderNo\": \"211151433324394595467264\",\n        \"pinCode\": \"\",\n        \"status\": \"7\",\n        \"amount\": \"100.0\",\n        \"currency\": \"USD\",\n        \"receiveAmount\": \"132.76\",\n        \"receiveCurrency\": \"SGD\",\n        \"paymentAmount\": \"100.0\",\n        \"paymentCurrency\": \"USD\",\n        \"rate\": \"1.327635\",\n        \"fee\": \"5.0\",\n        \"rateMode\": \"0\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Collection interface（USDT）",
+			"item": [
+				{
+					"name": "Create an order",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let requestParams = JSON.parse(request.data);\r",
+									"let param=requestParams.param;\r",
+									"let key = \"2d00b386231806ec7e18e2d96dc043aa\"; \r",
+									"\r",
+									"\r",
+									"function sortObj(obj) {\r",
+									"\tvar sortArry = new Array;\r",
+									"\tvar keysArr = Object.keys(obj).sort();\r",
+									"\tvar sortObj = {};\r",
+									"\tfor (var i in keysArr) {\r",
+									"\t\tsortObj[keysArr[i]] = (obj[keysArr[i]]);\r",
+									"\t}\r",
+									"\treturn sortObj;\r",
+									"}\r",
+									"\r",
+									"\r",
+									"function sortObj(obj) {\r",
+									"    var sortArry = new Array;\r",
+									"    var keysArr = Object.keys(obj).sort();\r",
+									"    var sortObjs = {};\r",
+									"    for (var i in keysArr) {\r",
+									"        if (obj[keysArr[i]] != \"\") {\r",
+									"            if (keysArr[i] == 'senderInfo' \r",
+									"            || keysArr[i] == 'receiverInfo'\r",
+									"            || keysArr[i] == 'fields'\r",
+									"            || keysArr[i] == 'receiverBusiness'\r",
+									"            || keysArr[i] == 'senderBusiness') {\r",
+									"                sortObjs[keysArr[i]] = sortObj(obj[keysArr[i]]);\r",
+									"            } else {\r",
+									"                sortObjs[keysArr[i]] = (obj[keysArr[i]]);\r",
+									"            }\r",
+									"        }\r",
+									"    }\r",
+									"    return sortObjs;\r",
+									"}\r",
+									"\r",
+									"function concatObj(obj) {\r",
+									"    var str = \"\"\r",
+									"    for (var item in obj) {\r",
+									"        if (obj[item] != \"\") {\r",
+									"            if (item == 'senderInfo' \r",
+									"            || item == 'receiverInfo'\r",
+									"            || item == 'fields'\r",
+									"            || item == 'receiverBusiness'\r",
+									"            || item == 'senderBusiness') {\r",
+									"                str = str + item + '={' + concatObj(obj[item]) + '}&';\r",
+									"            } else {\r",
+									"                str = str + item + '=' + (obj[item]) + '&';\r",
+									"            }\r",
+									"\r",
+									"        }\r",
+									"    }\r",
+									"    return str.substr(0, str.length - 1);;\r",
+									"}\r",
+									"\r",
+									"\r",
+									"let obj = sortObj(param);\r",
+									"\r",
+									"console.log(obj);\r",
+									"let sign = concatObj(obj);\r",
+									"\r",
+									"\r",
+									"sign = sign + \"&key=\" + key;\r",
+									"console.log(sign);\r",
+									"sign = CryptoJS.SHA256(sign) + \"\";\r",
+									"console.log(sign);\r",
+									"\r",
+									"//设置签名\r",
+									"pm.environment.set(\"sign\", sign);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"senderEpayAccount\": \"11@qq.com\",\n    \"merchantName\": \"epay\",\n    \"merchantOrderNo\": \"M0621122212401\",\n    \"amount\": \"1\",\n    \"paymentCurrency\": \"USDT\",\n    \"receiveCurrency\":\"USD\",\n    \"chainName\": \"USDT-TRC20\",\n    \"notifyUrl\": \"http://localhost/paymentApi/channel/send.do\",\n    \"remark\": \"test\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://29597375fx.epaydev.xyz/capi/openapi/payinApi/sendCryptoTransaction",
+							"protocol": "http",
+							"host": [
+								"29597375fx",
+								"epaydev",
+								"xyz"
+							],
+							"path": [
+								"capi",
+								"openapi",
+								"payinApi",
+								"sendCryptoTransaction"
+							]
+						},
+						"description": "Cryptocurrency collection（USDT）\n\n### BASIC\n\n**Path :** /payinApi/sendCryptoTransaction\n\n**Method :** POST\n\n**Desc :**\n\nPayin interface-cryptocurrency top-up (USDT)\n\n### REQUEST\n\n**Headers :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | object | YES |  | Parameter |\n|   |─epayAccount | string | YES |  | Merchant Epay Account |\n|   |─version | string | YES |  | Version |\n|   |─senderEpayAccount | string | YES |  | Sender Epay account |\n|   |─merchantName | string | YES |  | Merchant name |\n|   |─merchantOrderNo | string | YES |  | Merchant order number |\n|   |─amount | string | YES |  | Amount |\n|   |─paymentCurrency | string | YES |  | Payment Currency |\n|   |─receiveCurrency | string | YES |  | Receive Currency |\n|   |─chainName | string | YES |  | Cryptocurrency chain USDT-ERC20/USDT-TRC20 |\n|   |─notifyUrl | string | YES |  | Callback address |\n|   |─remark | string | NO |  | Remark |\n|   |─language | string | NO |  | Default language |\n| sign | string | NO |  | Signature |\n\n### RESPONSE\n\n**Header :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body :**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | NO |  | Signature |\n| epayAccount | string | NO |  | Merchant Epay Account |\n| version | string | NO |  | Version |\n| code | integer | NO |  | Status code 1 : Success |\n| message | string | NO |  | Notification |\n| data | object | NO |  | Data |\n|   |─merchantName | string | NO |  | Merchant name |\n|   |─senderEpayAccount | string | NO |  | Payment PAY account |\n|   |─notifyUrl | string | NO |  |  |\n|   |─merchantOrderNo | string | NO |  | Merchant order number |\n|   |─epayOrderNo | string | NO |  | Epay order number |\n|   |─status | string | NO |  | Epay order status |\n|   |─amount | string | NO |  | Order Amount (Excluding fees) |\n|   |─fee | string | NO |  | Fees |\n|   |─currency | string | NO |  | Currency |\n|   |─timestampgmt | string | NO |  | Timestamp |"
+					},
+					"response": [
+						{
+							"name": "Collection of crypto",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"senderEpayAccount\": \"11@qq.com\",\n    \"merchantName\": \"epay\",\n    \"merchantOrderNo\": \"M0621122212401\",\n    \"amount\": \"1\",\n    \"paymentCurrency\": \"USDT\",\n    \"receiveCurrency\":\"USD\",\n    \"chainName\": \"USDT-TRC20\",\n    \"notifyUrl\": \"http://localhost/paymentApi/channel/send.do\",\n    \"remark\": \"test\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payinApi/sendCryptoTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payinApi",
+										"sendCryptoTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 13 Sep 2021 11:18:27 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"4B52D148284D4A7210CE72A329C60906AE7C20618CB9B13C67C6CBFE7E16BD61\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"merchantName\": \"epay\",\n        \"senderEpayAccount\": \"11@qq.com\",\n        \"notifyUrl\": \"\",\n        \"merchantOrderNo\": \"M0621122212401\",\n        \"epayOrderNo\": \"201141437375104065114112\",\n        \"status\": \"1\",\n        \"fields\": \"{\\\"address\\\":\\\"TKnr8ZCZCH8aJCWCeb7yE57nuwqXWq17BC\\\",\\\"chainName\\\":\\\"USDT-TRC20\\\",\\\"currency\\\":\\\"USDT\\\",\\\"singleMax\\\":\\\"9999999\\\",\\\"singleMin\\\":\\\"0\\\",\\\"url\\\":\\\"data:image/jpg;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAADP0lEQVR42u3bwXHkMAxFwck/aTsIAvgg1e/qLZVE9RywpH5/UkM/SyCwBJbAksASWAJLAktgCSwJLIElsCSwBJbAksASWAJLAktgCSwJLIElsCSw9AFYv6lO7qrwngtv44qVBAsssMACCyywwALrXVhjVz75a98b7Xuine8ILLDAAgsssMACC6yHYJ28lbGFHruNwp/KkpUECyywwAILLLDAAgusxVcuHD/BAgsssMACCyywwALrk1NhaoRMbfiABRZYYIEFFlhggQVWNawU2ZN/3Pf4zmOBBRZYYIEFFlhggbUJVl992yM7/zq2kmCBBRZYYIEFFlhgfQbWklJbK0vmvvz6gwUWWGCBBRZYYIH1ramw8MpX7Ja8JBgssMACCyywwAILrAth9eHoW/ex/ZDUGbIHD/qBBRZYYIEFFlhggTU9JfWNNie30ecsdTrtyqkQLLDAAgsssMACC6xpWNvO/JcPXKkhcdsDggUWWGCBBRZYYIF1A6y+bYrCbZnCK/ddaglKsMACCyywwAILLLDehbVkh6dv7QoPjY39CB/87wawwAILLLDAAgsssKbpjL3C1JVTDxgPLLDAAgsssMACC6wLYY19EZCS1PdT6bvJB/cKwQILLLDAAgsssMCaXruxLy9OVnanhtQ5MLDAAgsssMACCyywHJuJjp87QS+XBBZYYIEFFlhggQXWc7DGvo8onPvGdqVSwylYYIEFFlhggQUWWGAdz1+pCWvJQajUJx5ggQUWWGCBBRZYYIG1aWZM/RgKx8/43AcWWGCBBRZYYIEF1v2wYk+yY92XfNMBFlhggQUWWGCBBRZYs5POFR9E9E2UqVkVLLDAAgsssMACC6yvwtp55T5JY6+/0DdYYIEFFlhggQUWWGBFp6S+ld15HsvHFGCBBRZYYIEFFlhgPQortT0ydqn4hg9YYIEFFlhggQUWWGAtmPuuGGzjx7PAAgsssMACCyywwLof1hjZvl2avskuNRSDBRZYYIEFFlhggQVWczs3fApf8DYrYIEFFlhggQUWWGA9B0sCS2AJLAksgSWwBJYElsASWBJYAktgSWAJLIElgSWwBJYElsASWBJYAktgSWAJLH2nf7dS5A0/8aBRAAAAAElFTkSuQmCC\\\"}\",\n        \"amount\": \"1\",\n        \"fee\": \"0.00\",\n        \"currency\": null,\n        \"timestampgmt\": \"2021-09-14 09:18:24\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Querying an order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"b48916e1-91fb-4ff9-9002-17e8431a5a15\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payinApi/queryTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payinApi",
+								"queryTransaction"
+							]
+						},
+						"description": "# query\n\n### BASIC\n\n**Path :** /payinApi/queryTransaction\n\n**Method :** POST\n\n**Desc :**\n\nCollection interface-order query\n\n### REQUEST\n\n**Headers :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | Parameter |\n|   |─epayAccount | string | YES |  | Merchant Epay Account |\n|   |─version | string | YES |  | Version |\n|   |─merchantOrderNo | string | YES |  | Merchant order number |\n| sign | string | YES |  | Signature |\n\n### RESPONSE\n\n**Header :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body :**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | Signature |\n| epayAccount | string | NO |  | Merchant Epay Account |\n| version | string | NO |  | Version |\n| code | integer | NO |  | Status code 1 : Success |\n| message | string | NO |  | Notification |\n| data | JSONObject | NO |  | Data |\n|   |─category | string | NO |  | Bank, Cash,Wire, E-wallet |\n|   |─merchantOrderNo | string | NO |  | Merchant order number |\n|   |─epayOrderNo | string | NO |  | Epay order number |\n|   |─pinCode | string | NO |  | Cash withdrawal code |\n|   |─status | string | NO |  | Epay order status |\n|   |─amount | string | NO |  | Settlement amount |\n|   |─currency | string | NO |  | Settlement currency |\n|   |─receiveAmount | string | NO |  | Received amount |\n|   |─receiveCurrency | string | NO |  | Received currency |\n|   |─paymentAmount | string | NO |  | Payment amount |\n|   |─paymentCurrency | string | NO |  | Payment currency |\n|   |─rate | string | NO |  | Exchange rate |\n|   |─fee | string | NO |  | Fees |\n|   |─extendFields | string | NO |  | Merchant extension field |\n|   |─rateMode | string | NO |  | Rate Type 0：Payment currency to Received currency 1：Received currency to Payment currency |\n|   |─senderInfo | JSONObject | NO |  | sender info |\n|   |─receiveInfo | JSONObject | NO |  | receive info |"
+					},
+					"response": [
+						{
+							"name": "Querying an order",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"b48916e1-91fb-4ff9-9002-17e8431a5a15\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/queryTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"queryTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 12 Sep 2021 08:02:01 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"CA0AEA1A192DA37F04D264F24F38663B006356E336C9DEC686DC29B32DA2B705\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"EWALLET\",\n        \"merchantOrderNo\": \"b48916e1-91fb-4ff9-9002-17e8431a5a15\",\n        \"epayOrderNo\": \"201141458426277643849728\",\n        \"pinCode\": null,\n        \"status\": \"1\",\n        \"amount\": \"123.45\",\n        \"currency\": \"EUR\",\n        \"receiveAmount\": \"123.45\",\n        \"receiveCurrency\": \"EUR\",\n        \"paymentAmount\": \"134.56\",\n        \"paymentCurrency\": \"EUR\",\n        \"rate\": \"1.000000\",\n        \"fee\": \"11.11\",\n        \"extendFields\": null\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Payment interface（USDT）",
+			"item": [
+				{
+					"name": "Payment interface-Create an order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"sign\": \"{{sign}}\",\n\t\"param\": {\n\t\t\"epayAccount\": \"test2020@epay.com\",\n\t\t\"category\": \"CRYPTO\",\n\t\t\"notifyUrl\": \"http://localhost/paymentApi/channel/send.do\",\n\t\t\"merchantOrderNo\": \"070200123\",\n\t\t\"amount\": \"10\",\n\t\t\"currency\": \"USDT\",\n\t\t\"version\": \"V2.0.0\",\n\t\t\"receiverInfo\": {\n\t\t\t\"chainType\": \"USDT-TRC20\",\n\t\t\t\"address\": \"Tsssswwwwwwrrrww\",\n            \"country\": \"CN\"\n\t\t},\n        \"transactionType\": \"C2C\",\n        \"extendFields\": \"\"\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payoutApi/createCryptoTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payoutApi",
+								"createCryptoTransaction"
+							]
+						},
+						"description": "# Create an order\n\n### BASIC\n\n**Path :** /payoutApi/createCryptoTransaction\n\n**Method :** POST\n\n**Desc :**\n\nCryptocurrency chain USDT-ERC20/USDT-TRC20\n\n### REQUEST\n\n**Headers :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | Parameter |\n| ─epayAccount | string | YES |  | Merchant Epay Account |\n| ─category | string | YES | CRYPTO | Type CRYPTO |\n| ─notifyUrl | string | NO |  | Callbank Address |\n| ─merchantOrderNo | string | YES |  | Merchant Order Number |\n| ─amount | string | NO |  | Amount |\n| ─currency | string | YES |  | Currency |\n| ─version | string | YES |  | Version |\n| ─extendFields | JSONObject | NO |  |  |\n| ─receiverInfo | JSONObject | YES |  |  |\n| ─chainType | string | YES |  | Cryptocurrency chain USDT-ERC20/USDT-TRC20  <br> |\n| ─address | string | YES |  |  |\n| ─country | string | YES |  |  |\n| transactionType | string | YES |  | Type C2C |\n| sign | string | YES |  | sign |\n\n### RESPONSE\n\n**Header :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body :**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | Signature |\n| epayAccount | string | NO |  | Merchant Epay Account |\n| version | string | NO |  | Version |\n| code | integer | NO |  | Response Code 1 : Success |\n| message | string | NO |  | Notification |\n| data | JSONObject | NO |  | Data |\n| ─category | string | NO |  |  |\n| ─merchantOrderNo | string | NO |  |  |\n| ─epayOrderNo | string | NO |  |  |\n| ─status | string | NO |  | Order Status |\n| ─amount | string | NO |  | Payment Amount |\n| ─currency | string | NO |  | Currency |\n| ─receiveAmount | string | NO |  | Receive Amount |\n| ─rate | string | NO |  | Rate |\n| ─fee | string | NO |  | Order Fee |\n| ─extendFields | string | NO |  |  |\n| ─address | string | NO |  |  |\n| ─chainType | string | NO |  |  |"
+					},
+					"response": [
+						{
+							"name": "Transfer to Ewallet",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"sign\": \"{{sign}}\",\n\t\"param\": {\n\t\t\"epayAccount\": \"test2020@epay.com\",\n\t\t\"category\": \"EWALLET\",\n        \"channelCode\":\"11\",\n\t\t\"notifyUrl\": \"http://localhost/paymentApi/channel/send.do\",\n\t\t\"merchantOrderNo\": \"070200122\",\n\t\t\"amount\": \"0.01\",\n\t\t\"currency\": \"USD\",\n\t\t\"version\": \"V2.0.0\",\n\t\t\"receiverInfo\": {\n\t\t\t\"accountNo\": \"41111810111111111111\",\n\t\t\t\"remark\": \"remark\"\n\t\t}\n\t}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/createEwalletTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"createEwalletTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 12 Aug 2021 10:13:36 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"1D3EDE5202A6919D5BC7A335F71C4DA914BD23233D6590E08F279B2C92CF1B97\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"EWALLET\",\n        \"merchantOrderNo\": \"070200122\",\n        \"epayOrderNo\": \"231151425762384680779776\",\n        \"status\": \"1\",\n        \"amount\": \"0.01\",\n        \"settlementCurrency\": null,\n        \"receiveAmount\": \"0.01\",\n        \"receiveCurrency\": null,\n        \"rate\": \"1.000000\",\n        \"fee\": \"0.01\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Payment interface-Confirm an order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"202201019001\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payoutApi/confirmTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payoutApi",
+								"confirmTransaction"
+							]
+						},
+						"description": "# Confirmation\n\n### BASIC\n\n**Path :** /payoutApi/confirmTransaction\n\n**Method :** POST\n\n**Desc :**\n\nPayout interface-order confirmation\n\n### REQUEST\n\n**Headers :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | Parameter |\n|  | ─epayAccount | string | YES |  |\n|  | ─version | string | YES |  |\n|  | ─merchantOrderNo | string | YES |  |\n| sign | string | YES |  | Signature |\n\n### RESPONSE\n\n**Header :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body :**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | Signature |\n| epayAccount | string | NO |  | Merchant Epay Account |\n| version | string | NO |  | Version |\n| code | integer | NO |  | Status code 1 : Success |\n| message | string | NO |  | Notification |\n| data | JSONObject | NO |  | Data |\n|  | ─category | string | NO |  |\n|  | ─merchantOrderNo | string | NO |  |\n|  | ─epayOrderNo | string | NO |  |\n|  | ─status | string | NO |  |\n|  | ─paymentAmount | string | NO |  |\n|  | ─settlementCurrency | string | NO |  |\n|  | ─receiveAmount | string | NO |  |\n|  | ─receiveCurrency | string | NO |  |\n|  | ─rate | string | NO |  |\n|  | ─payerFee | string | NO |  |\n|  | ─extendFields | string | NO |  |\n|  | ─rateMode | string | NO | 0 exchange rate USD to CNY, 1 exchange rate CNY to USD |"
+					},
+					"response": [
+						{
+							"name": "Confirm an order",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"20210708901\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/confirmTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"confirmTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Sep 2021 11:58:08 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"F6A203F8CD122B10B397AE8B9CB0C79930293965FB51BCF59CDB9503D3D83F40\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"BANK\",\n        \"merchantOrderNo\": \"20210708901\",\n        \"epayOrderNo\": \"211151433033399790071808\",\n        \"status\": \"1\",\n        \"amount\": \"100.0\",\n        \"settlementCurrency\": \"USD\",\n        \"receiveAmount\": \"132.91\",\n        \"receiveCurrency\": \"SGD\",\n        \"rate\": \"1.329116\",\n        \"fee\": \"4.0\",\n        \"rateMode\": \"0\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Payment interface-Cancel an order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"20210708220\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payoutApi/cancelTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payoutApi",
+								"cancelTransaction"
+							]
+						},
+						"description": "# Cancellation\n\n### BASIC\n\n**Path :** /payoutApi/cancelTransaction\n\n**Method :** POST\n\n**Desc :**\n\nPayout interface-order cancellation\n\n### REQUEST\n\n**Headers :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | Parameter |\n|   |─epayAccount | string | YES |  | Merchant Epay Account |\n|   |─version | string | YES |  | Version |\n|   |─merchantOrderNo | string | YES |  | Merchant order number |\n| sign | string | YES |  | Signature |\n\n### RESPONSE\n\n**Header :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body :**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | Signature |\n| epayAccount | string | NO |  | Merchant Epay Account |\n| version | string | NO |  | Version |\n| code | integer | NO |  | Status code 1 : Success |\n| message | string | NO |  | Notification |\n| data | JSONObject | NO |  | Data |\n|   |─category | string | NO |  | Bank, Cash, E-wallet |\n|   |─merchantOrderNo | string | NO |  | Merchant order number |\n|   |─epayOrderNo | string | NO |  | Epay order number |\n|   |─status | string | NO |  | Epay order status |\n|   |─paymentAmount | string | NO |  | Settlement amount |\n|   |─settlementCurrency | string | NO |  | Settlement currency |\n|   |─receiveAmount | string | NO |  | Received amount |\n|   |─receiveCurrency | string | NO |  | Receive currency |\n|   |─rate | string | NO |  | Exchange rate |\n|   |─payerFee | string | NO |  | Fees |\n|   |─extendFields | string | NO |  | Merchant extension field |"
+					},
+					"response": [
+						{
+							"name": "Cancel an order",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"20210708220\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/cancelTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"cancelTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Sep 2021 11:57:37 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"3BDFDC7FA142852CA5A658ECD86C2E102C501A938E4393D58A8111634EDDB5AD\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"BANK\",\n        \"merchantOrderNo\": \"20210708220\",\n        \"epayOrderNo\": \"211151433035626655117312\",\n        \"status\": \"5\",\n        \"amount\": \"100.0\",\n        \"settlementCurrency\": \"USD\",\n        \"receiveAmount\": \"132.91\",\n        \"receiveCurrency\": \"SGD\",\n        \"rate\": \"1.329116\",\n        \"fee\": \"5.0\",\n        \"rateMode\": \"0\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Payment interface-Querying an order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"CN09160201\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{openapi-center}}/payoutApi/queryTransaction",
+							"host": [
+								"{{openapi-center}}"
+							],
+							"path": [
+								"payoutApi",
+								"queryTransaction"
+							]
+						},
+						"description": "# Query\n\n### BASIC\n\n**Path :** /payoutApi/queryTransaction\n\n**Method :** POST\n\n**Desc :**\n\nPayout interface-order query\n\n### REQUEST\n\n**Headers :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| Content-Type | application/json | YES |  |\n\n**RequestBody**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| param | JSONObject | YES |  | Parameter |\n|   |─epayAccount | string | YES |  | Merchant Epay Account |\n|   |─version | string | YES |  | Version |\n|   |─merchantOrderNo | string | YES |  | Merchant order number |\n| sign | string | YES |  | Signature |\n\n### RESPONSE\n\n**Header :**\n\n| name | value | required | desc |\n| --- | --- | --- | --- |\n| content-type | application/json;charset=UTF-8 | NO |  |\n\n**Body :**\n\n| name | type | required | default | desc |\n| --- | --- | --- | --- | --- |\n| sign | string | YES |  | Signature |\n| epayAccount | string | NO |  | Merchant Epay Account |\n| version | string | NO |  | Version |\n| code | integer | NO |  | Status code 1 : Success |\n| message | string | NO |  | Notification |\n| data | JSONObject | NO |  | Data |\n|   |─category | string | NO |  | Bank, Cash, E-wallet |\n|   |─merchantOrderNo | string | NO |  | Merchant order number |\n|   |─epayOrderNo | string | NO |  | Epay order number |\n|   |─pinCode | string | NO |  | Cash withdrawal code |\n|   |─status | string | NO |  | Epay order status |\n|   |─amount | string | NO |  | Settlement amount |\n|   |─currency | string | NO |  | Settlement currency |\n|   |─receiveAmount | string | NO |  | Received amount |\n|   |─receiveCurrency | string | NO |  | Received currency |\n|   |─paymentAmount | string | NO |  | Payment amount |\n|   |─paymentCurrency | string | NO |  | Payment currency |\n|   |─rate | string | NO |  | Exchange rate |\n|   |─fee | string | NO |  | Fees |\n|   |─extendFields | string | NO |  | Merchant extension field |\n|   |─rateMode | string | NO |  | Rate type 0：Payment currency to Received currency 1:Received currency to Payment currency |"
+					},
+					"response": [
+						{
+							"name": "Querying an order",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"param\": {\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"merchantOrderNo\": \"20210708220\"\n  },\n  \"sign\": \"{{sign}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{openapi-center}}/payoutApi/queryTransaction",
+									"host": [
+										"{{openapi-center}}"
+									],
+									"path": [
+										"payoutApi",
+										"queryTransaction"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "transfer-encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 12 Sep 2021 08:02:01 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sign\": \"2B99AF25516083A4869F038458B3D728849A48060FBC3A5DB2D9D767FECD119E\",\n    \"epayAccount\": \"test2020@epay.com\",\n    \"version\": \"V2.0.0\",\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"category\": \"BANK\",\n        \"merchantOrderNo\": \"20210708220\",\n        \"epayOrderNo\": \"211151433324394595467264\",\n        \"pinCode\": \"\",\n        \"status\": \"7\",\n        \"amount\": \"100.0\",\n        \"currency\": \"USD\",\n        \"receiveAmount\": \"132.76\",\n        \"receiveCurrency\": \"SGD\",\n        \"paymentAmount\": \"100.0\",\n        \"paymentCurrency\": \"USD\",\n        \"rate\": \"1.327635\",\n        \"fee\": \"5.0\",\n        \"rateMode\": \"0\"\n    }\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "openapi-center",
+			"value": "http://29597375fx.epaydev.xyz/capi/openapi"
+		}
+	]
+}
